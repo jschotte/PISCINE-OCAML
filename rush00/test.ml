@@ -1,15 +1,41 @@
+let is_digit c = c >= '0' && c <= '9'
+
+let ft_string_all pred str =
+    let l = (String.length str) - 1 in
+    let rec loop i =
+        if i > l
+        then true
+        else if pred (String.get str (i)) = false && String.get str (i) <> ' '
+        then false
+        else
+        loop (i + 1);
+    in
+    loop 0
+
 module Value =
     struct
         type t = X | O | N
 
         let toString t = match t with
             | X     -> "X"
-            | O     -> "0"
+            | O     -> "O"
             | N     -> "-"
     
         let isFree t = if t = N
                        then true
                        else false
+
+        let verification t = match t with
+        | a :: b :: c :: d :: e :: f :: g :: h :: i :: [] -> if a = b && b = c && a <> N then a
+    (* Honrizontale Check *)                                 else if d = e && e = f && d <> N then d
+                                                             else if g = h && h = i && g <> N then g
+                                                             else if a = d && d = g && a <> N then a
+    (*   Vertical Check   *)                                 else if b = e && e = h && b <> N then b
+                                                             else if c = f && f = i && c <> N then c
+    (*    Cross Check     *)                                 else if a = e && e = i && a <> N then a
+                                                             else if c = e && e = g && c <> N then c
+    (*    NUll NATCH      *)                                 else N
+       | _                                                 -> N
     end
 
 module Map =
@@ -28,48 +54,48 @@ module Map =
             in
             print 1 t
 
-        let printline t line =
-            let rec print acc t = match t with
+        let isWin t = Value.verification t
+       
+        
+
+        let printline t line = 
+            let rec print acc l = match l with
                 | []                    -> ""
                 | hd::n1::n2::tail      -> if acc = line
-                                            then (Value.toString hd) ^ " " ^ (Value.toString n1) ^ " " ^ (Value.toString n2)
-                                            else print (acc + 1) tail
+                                           then
+                                           begin
+                                               if isWin t = Value.N
+                                               then (Value.toString hd) ^ " " ^ (Value.toString n1) ^ " " ^ (Value.toString n2)
+                                               else if isWin t = Value.X
+                                               then
+                                                   begin
+                                                       if line = 1
+                                                       then "\\   /"
+                                                       else if line = 2
+                                                       then "  X  "
+                                                       else "/   \\"
+                                                   end
+                                               else
+                                                   begin
+                                                       if line = 1
+                                                       then "/ - \\"
+                                                       else if line = 2
+                                                       then "|   |"
+                                                       else "\\ - /"
+                                                   end
+                                           end
+                                           else print (acc + 1) tail
                 | _                     -> ""
             in
             print 1 t
         
-       (*let replaceValue x value oldmap =
-           let rec findvalue acc x value oldmap newmap= match oldmap with
-            | []            -> []
-            | head :: tail  -> if acc = x
-                               then newmap @ value
-                               else newmap @ tail;
-                               findvalue (acc + 1) x value tail newmap
-            in
-            findvalue 1 x value oldmap []*)
+        let replace_in_map nb_case value t =  List.mapi (fun i x -> if i = nb_case - 1 then value else x) t 
 
-        let replace_in_map nb_case value t =  List.mapi (fun i x -> if i = nb_case - 1 then value else x) t
-       
 
-       let verification t = match t with
-                            | a :: b :: c
-                        ::    d :: e :: f
-                        ::    g :: h :: i 
-                        :: []
-                        ->
-                            if a = b && b = c then a
-(* Honrizontale Check *)    else if d = e && e = f then d
-                            else if g = h && h = i then g
- 
-                            else if a = d && d = g then a
-(*   Vertical Check   *)    else if b = e && e = h then b
-                            else if c = f && f = i then c
-
-(*    Cross Check     *)    else if a = e && e = i then a
-                            else if c = e && e = g then c
-
-(*    NUll NATCH      *)    else Value.N
-                        | _ -> Value.N
+        let verif_case y t =
+            if List.nth t (y-1) <> Value.N
+            then false
+            else true
     end
 
 module Game =
@@ -94,16 +120,49 @@ module Game =
             in
             print t
            
-       let replace_in_map nb_map nb_case value t = List.mapi (fun i x -> if i = nb_map - 1 then (Map.replace_in_map nb_case value x) else x) t
+       let replace_in_map nb_map nb_case value t = List.mapi (fun i x -> if i = nb_map - 1 then (Map.replace_in_map nb_case value x) else x) t 
+       
+       let check nb_map t =
+           Map.isWin (List.nth t (nb_map - 1))
+       
+       let verif_input x y t =
+           if x > 9 || x < 0 || y > 9 || y < 0 || Map.isWin (List.nth t (x - 1)) <> Value.N
+           then false
+           else
+                Map.verif_case y (List.nth t (x - 1))
     end
 
 
-let () = 
+let () =
+    let v = Value.X in
     let game = Game.newGame () in
     Game.printGame game;
-    let ng = Game.replace_in_map 2 4 Value.X game in
-    Game.printGame ng
-
+    let rec whileGame game v =
+        print_endline "Veuillez entrer les coordonnees ";
+        let input = read_line () in
+        if ft_string_all is_digit input = false         (* VERIF TYPE INPUT *)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
+        let split = String.split_on_char ' ' input in
+        let x = int_of_string (List.hd split) in
+        let y = int_of_string (List.nth split 1) in 
+        if Game.verif_input x y game = false             (* VERIF VALUE INPUT *)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
+        let ng = Game.replace_in_map x y v game in
+        Game.check x ng;
+        Game.printGame ng;
+        if v = Value.X
+        then whileGame ng Value.O
+        else whileGame ng Value.X
+    in
+    whileGame game v
 
 
 
