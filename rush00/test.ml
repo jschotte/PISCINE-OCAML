@@ -49,7 +49,27 @@ module Map =
             findvalue 1 x value oldmap []*)
 
         let replace_in_map nb_case value t =  List.mapi (fun i x -> if i = nb_case - 1 then value else x) t
+       
 
+       let verification t = match t with
+                            | a :: b :: c
+                        ::    d :: e :: f
+                        ::    g :: h :: i 
+                        :: []
+                        ->
+                            if a = b && b = c then a
+(* Honrizontale Check *)    else if d = e && e = f then d
+                            else if g = h && h = i then g
+ 
+                            else if a = d && d = g then a
+(*   Vertical Check   *)    else if b = e && e = h then b
+                            else if c = f && f = i then c
+
+(*    Cross Check     *)    else if a = e && e = i then a
+                            else if c = e && e = g then c
+
+(*    NUll NATCH      *)    else Value.N
+                        | _ -> Value.N
     end
 
 module Game =
