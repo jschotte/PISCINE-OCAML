@@ -104,11 +104,16 @@ module Game =
 
         let getMap t = t.map
 
-        let newGame () = [Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap()]
+        let newGame () = [Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap()]
+
+        let printEndMap t =
+            print_endline (Map.printline (List.nth t 9) 1);
+            print_endline (Map.printline (List.nth t 9) 2);
+            print_endline (Map.printline (List.nth t 9) 3)
 
         let printGame t = 
             print_endline "---------------------";
-            let rec print t = match t with
+            let rec print l = match l with
                 | []                        -> ()
                 | head :: n1 :: n2 :: tail  -> print_endline ( (Map.printline (head) 1) ^ " | "  ^ (Map.printline (n1) 1) ^ " | " ^ (Map.printline (n2) 1));
                                                print_endline ( (Map.printline (head) 2) ^ " | "  ^ (Map.printline (n1) 2) ^ " | " ^ (Map.printline (n2) 2));
@@ -123,13 +128,14 @@ module Game =
        let replace_in_map nb_map nb_case value t = List.mapi (fun i x -> if i = nb_map - 1 then (Map.replace_in_map nb_case value x) else x) t 
        
        let check nb_map t =
-           Map.isWin (List.nth t (nb_map - 1))
+          Map.isWin (List.nth t (nb_map - 1))
        
        let verif_input x y t =
            if x > 9 || x < 0 || y > 9 || y < 0 || Map.isWin (List.nth t (x - 1)) <> Value.N
            then false
            else
                 Map.verif_case y (List.nth t (x - 1))
+
     end
 
 
@@ -142,7 +148,7 @@ let () =
     let game = Game.newGame () in
     Game.printGame game;
     let rec whileGame game v =
-        if v = Value.O && name2 = "IA"
+        if v = Value.O && name2 = "IA" (*Begin IA*)
         then
             begin
         if v = Value.X
@@ -176,16 +182,16 @@ let () =
             end;
         let ng = Game.replace_in_map x y v game in
         if Game.check x ng = Value.X
-        then print_endline ("Le joueur " ^ name1 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x)
+        then print_endline ("Le joueur " ^ name1 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x) 
         else if Game.check x ng = Value.O 
             then print_endline ("Le joueur " ^ name2 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x);
         Game.printGame ng;
         if v = Value.X
         then whileGame ng Value.O
         else whileGame ng Value.X;
-            end
+            end                        (*END IA*)
 
-        else
+        else                        
             begin
         if v = Value.X
         then print_endline ("Au tour de " ^ name1 ^ " (X) de jouer, veuillez entrer les coordonnees ")
@@ -222,6 +228,12 @@ let () =
         else if Game.check x ng = Value.O 
             then print_endline ("Le joueur " ^ name2 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x);
         Game.printGame ng;
+        let ng = Game.replace_in_map 10 x (Game.check x ng) ng in
+        Game.printEndMap ng;
+        if Game.check 10 ng = Value.O
+        then print_endline ("LE JOUEUR " ^ name2 ^ " (O) A GAGNE LA PARTIE")
+        else if Game.check 10 ng = Value.X
+        then print_endline ("LE JOUEUR " ^ name1 ^ " (X) A GAGNE LA PARTIE");
         if v = Value.X
         then whileGame ng Value.O
         else whileGame ng Value.X;
