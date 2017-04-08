@@ -135,10 +135,20 @@ module Game =
 
 let () =
     let v = Value.X in
+    print_endline "Entrez le nom du joueur 1";
+    let name1 = read_line () in
+    print_endline "Entrez le nom du joueur 2 (IA)";
+    let name2 = read_line () in
     let game = Game.newGame () in
     Game.printGame game;
     let rec whileGame game v =
-        print_endline "Veuillez entrer les coordonnees ";
+        if v = Value.O && name2 = "IA"
+        then
+            begin
+        if v = Value.X
+        then print_endline ("Au tour de " ^ name1 ^ " (X) de jouer, veuillez entrer les coordonnees ")
+        else
+        print_endline ("Au tour de " ^ name2 ^ " (O) de jouer, veuillez entrer les coordonnees ");
         let input = read_line () in
         if ft_string_all is_digit input = false         (* VERIF TYPE INPUT *)
         then 
@@ -147,6 +157,15 @@ let () =
                 whileGame game v;
             end;
         let split = String.split_on_char ' ' input in
+        if List.length split < 2 || (String.length (List.nth (split) 0) <= 0)
+                                 || (String.length (List.nth (split) 0) >= 2)
+                                 || (String.length (List.nth (split) 1) <= 0)
+                                 || (String.length (List.nth (split) 1) >= 2)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
         let x = int_of_string (List.hd split) in
         let y = int_of_string (List.nth split 1) in 
         if Game.verif_input x y game = false             (* VERIF VALUE INPUT *)
@@ -156,11 +175,57 @@ let () =
                 whileGame game v;
             end;
         let ng = Game.replace_in_map x y v game in
-        Game.check x ng;
+        if Game.check x ng = Value.X
+        then print_endline ("Le joueur " ^ name1 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x)
+        else if Game.check x ng = Value.O 
+            then print_endline ("Le joueur " ^ name2 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x);
         Game.printGame ng;
         if v = Value.X
         then whileGame ng Value.O
-        else whileGame ng Value.X
+        else whileGame ng Value.X;
+            end
+
+        else
+            begin
+        if v = Value.X
+        then print_endline ("Au tour de " ^ name1 ^ " (X) de jouer, veuillez entrer les coordonnees ")
+        else
+        print_endline ("Au tour de " ^ name2 ^ " (O) de jouer, veuillez entrer les coordonnees ");
+        let input = read_line () in
+        if ft_string_all is_digit input = false         (* VERIF TYPE INPUT *)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
+        let split = String.split_on_char ' ' input in
+        if List.length split < 2 || (String.length (List.nth (split) 0) <= 0)
+                                 || (String.length (List.nth (split) 0) >= 2)
+                                 || (String.length (List.nth (split) 1) <= 0)
+                                 || (String.length (List.nth (split) 1) >= 2)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
+        let x = int_of_string (List.hd split) in
+        let y = int_of_string (List.nth split 1) in 
+        if Game.verif_input x y game = false             (* VERIF VALUE INPUT *)
+        then 
+            begin
+                print_endline "Invalid params";
+                whileGame game v;
+            end;
+        let ng = Game.replace_in_map x y v game in
+        if Game.check x ng = Value.X
+        then print_endline ("Le joueur " ^ name1 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x)
+        else if Game.check x ng = Value.O 
+            then print_endline ("Le joueur " ^ name2 ^ " (" ^ (Value.toString v) ^ ") a complete la grille " ^ string_of_int x);
+        Game.printGame ng;
+        if v = Value.X
+        then whileGame ng Value.O
+        else whileGame ng Value.X;
+            end
     in
     whileGame game v
 
