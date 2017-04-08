@@ -37,11 +37,26 @@ module Map =
                 | _                     -> ""
             in
             print 1 t
+        
+       (*let replaceValue x value oldmap =
+           let rec findvalue acc x value oldmap newmap= match oldmap with
+            | []            -> []
+            | head :: tail  -> if acc = x
+                               then newmap @ value
+                               else newmap @ tail;
+                               findvalue (acc + 1) x value tail newmap
+            in
+            findvalue 1 x value oldmap []*)
+
+        let replace_in_map nb_case value t =  List.mapi (fun i x -> if i = nb_case - 1 then value else x) t
+
     end
 
 module Game =
     struct
-        type t = Map.t list
+        type t = {map: Map.t list}
+
+        let getMap t = t.map
 
         let newGame () = [Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap();Map.newMap()]
 
@@ -58,12 +73,22 @@ module Game =
                                    
             in
             print t
+           
+       let replace_in_map nb_map nb_case value t = List.mapi (fun i x -> if i = nb_map - 1 then (Map.replace_in_map nb_case value x) else x) t
     end
 
 
 let () = 
-    Game.printGame (Game.newGame ())
+    let game = Game.newGame () in
+    Game.printGame game;
+    let ng = Game.replace_in_map 2 4 Value.X game in
+    Game.printGame ng
 
+
+
+
+
+    
 
 
 
