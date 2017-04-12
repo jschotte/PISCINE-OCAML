@@ -14,7 +14,7 @@ let ft_string_all pred str =
 
 let () =
     let rec newGame () =
-        let v = Value.X in
+        let v = Value.O in
         print_endline "Entrez le nom du joueur 1";
         let name1 = read_line () in
         print_endline "Entrez le nom du joueur 2 (tapez IA pour jouer contre l'IA)";
@@ -187,6 +187,6 @@ let () =
                 end
 
         in
-        whileGame game v 0
+        whileGame game v 1
     in
     newGame ()
