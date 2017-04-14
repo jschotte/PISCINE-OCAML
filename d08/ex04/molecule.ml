@@ -16,13 +16,15 @@ class virtual molecule name atoms =
     object(self)
         val _name:string = name
         val _formula:string = gethill atoms
+        val _atoms:(Atom.atom list) = atoms
 
         method getName = _name
         method getFormula = _formula
-
+        method getAtoms = _atoms
         method to_string = _name ^ ": " ^ _formula
+        method to_formstring = _formula
 
-        method equals (other:molecule) = (_name = other#getName && _formula ==
+        method equals (other:molecule) = (_name = other#getName && _formula =
             other#getFormula)
     end
 
@@ -83,4 +85,9 @@ class amonia =
     object
         inherit molecule "Amonia" [new Atom.nitrogen; new Atom.hydrogen;new
         Atom.hydrogen;new Atom.hydrogen]
-    end 
+    end
+
+class dioxygen =
+    object
+        inherit molecule "Dioxygene" [new Atom.oxygen; new Atom.oxygen]
+    end
