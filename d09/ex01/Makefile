@@ -1,4 +1,4 @@
 RESULT = watch
-SOURCES = main.ml
+SOURCES = app.ml main.ml
 OCAMLMAKEFILE = OcamlMakefile
 include $(OCAMLMAKEFILE)

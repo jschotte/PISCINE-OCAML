@@ -1,4 +1,4 @@
-RESULT = watch
-SOURCES = watchtower.ml main.ml
+RESULT = try
+SOURCES = try.ml main.ml
 OCAMLMAKEFILE = OcamlMakefile
 include $(OCAMLMAKEFILE)
